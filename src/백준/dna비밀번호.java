@@ -53,6 +53,7 @@ public class dna비밀번호 {
             p2+=1;
         }
 
+
         System.out.println(answer);
     }
 

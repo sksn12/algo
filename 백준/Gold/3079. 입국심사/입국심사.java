@@ -1,53 +1,47 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.Arrays;
+import java.util.StringTokenizer;
+
 public class Main {
-    static int n;
-    static long m, max;
-    static int [] arr;
-    static long result = Long.MAX_VALUE;
     public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
- 
-        String[] s = br.readLine().split(" ");
-        n = Integer.parseInt(s[0]);
-        m = Integer.parseInt(s[1]);
- 
-        arr = new int[n];
-        for(int i=0; i<n; i++){
-            arr[i] = Integer.parseInt(br.readLine());
-            max = Math.max(max,arr[i]);
+        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st=new StringTokenizer(br.readLine());
+
+        int N=Integer.parseInt(st.nextToken());
+        int M=Integer.parseInt(st.nextToken());
+
+        int[] map=new int[N];
+
+        int max=0;
+        for (int i = 0; i < N; i++) {
+            map[i]=Integer.parseInt(br.readLine());
+            max=Math.max(map[i],max);
         }
-        Arrays.sort(arr);
- 
-        solve();
- 
-        System.out.println(result);
-    }
- 
-    private static void solve(){
-        long low = 0;
-        long high = m * max;
- 
-        while(low<=high){
-            long mid = (low+high)/2;
-            long sum = 0;
-            for(long index: arr){
-                long count = mid/index;
- 
-                if(sum>=m){
-                    break;
-                }
-                sum+=count;
+
+        long left=0L;
+        long right=(max)*1000000000L;
+
+        Long answer=0L;
+        while (left<=right){
+            long mid=(left+right)/2;
+
+            Long cnt=0L;
+            for (Integer i:map) {
+                cnt+=mid/i;
+                if(cnt>=M)break;
             }
-            if(sum>=m){
-                high = mid-1;
-                result = Math.min(mid,result);
-            }
-            else{
-                low = mid+1;
+
+            if(cnt>=M){
+                answer=mid;
+                right=mid-1;
+            }else if(cnt<M){
+                left=mid+1;
             }
         }
+
+        System.out.println(answer);
     }
+
 }

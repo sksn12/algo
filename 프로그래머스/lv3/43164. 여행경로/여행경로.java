@@ -5,19 +5,14 @@ class Solution {
     static boolean[] v;
     
     public String[] solution(String[][] tickets) {
-        String[] answer = new String[tickets.length+1];
-        
         v=new boolean[tickets.length];
         
         DFS("ICN","ICN",0,tickets);
         
         Collections.sort(list);
         
-        String[] str=list.get(0).split(" ");
-        
-        for(int i=0;i<answer.length;i++){
-            answer[i]=str[i];
-        }
+        String[] answer=list.get(0).split(" ");
+
         return answer;
     }
     

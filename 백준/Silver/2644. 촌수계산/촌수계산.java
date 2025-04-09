@@ -1,56 +1,61 @@
+import java.util.*;
+import java.io.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+public class Main{
+    static int N,F1,F2;
+    static boolean[][] map;
+    static boolean[] v;
+    static int answer=-1;
+    static int cnt=0;
 
-public class Main {
-    static int end,m,N;
-    static int[][] map;
-    static boolean[][] v;
-    static boolean val=false;
-
-    public static void main(String[] args) throws IOException {
-        BufferedReader br =new BufferedReader(new InputStreamReader(System.in));
-         N=Integer.parseInt(br.readLine());
-
+    public static void main(String[] args) throws IOException{
+        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st=new StringTokenizer(br.readLine());
 
-        int ey=Integer.parseInt(st.nextToken());
-        end=Integer.parseInt(st.nextToken());
+        N=Integer.parseInt(st.nextToken());
 
-        m=Integer.parseInt(br.readLine());
+        st=new StringTokenizer(br.readLine());
+        F1=Integer.parseInt(st.nextToken());
+        F2=Integer.parseInt(st.nextToken());
 
-        map=new int[N+1][N+1];
-        v=new boolean[N+1][N+1];
+        st=new StringTokenizer(br.readLine());
+        int Z=Integer.parseInt(st.nextToken());
 
-        for (int i = 0; i < m; i++) {
+        map=new boolean[N][N];
+        v=new boolean[N];
+
+        for(int z=0;z<Z;z++){
             st=new StringTokenizer(br.readLine());
 
-            int y=Integer.parseInt(st.nextToken());
-            int x=Integer.parseInt(st.nextToken());
+            int x1=Integer.parseInt(st.nextToken());
+            int x2=Integer.parseInt(st.nextToken());
 
-            map[y][x]=1;
-            map[x][y]=1;
+            map[x1-1][x2-1]=true;
+            map[x2-1][x1-1]=true;
+
         }
 
-        dfs(ey,0);
+        dfs(F1-1);
 
-        if(!val) System.out.println(-1);
+        System.out.println(answer);
     }
 
-    private static void dfs(int start,int cnt) {
-        if(start==end){
-            System.out.println(cnt);
-            val=true;
+    public static void dfs(int node){
+        if(answer!=-1)return;
+
+        if(node==F2-1){
+            answer=cnt;
             return;
         }
 
-        for (int i = 1; i <= N; i++) {
-            if(map[start][i]==1 && !v[start][i]){
-                v[start][i]=true;
-                v[i][start]=true;
-                dfs(i,cnt+1);
+        v[node]=true;
+
+        for(int i=0;i<N;i++){
+            if(!v[i] && map[node][i]){
+                cnt+=1;
+                dfs(i);
+                cnt-=1;
+                
             }
         }
     }

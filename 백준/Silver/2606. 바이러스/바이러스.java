@@ -1,58 +1,47 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
-public class Main {
-
+public class Main{
+    static int N;
     static boolean[][] map;
     static boolean[] v;
     static int answer=0;
-    static int N,M;
-    static Queue<Integer> q=new LinkedList<>();
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException{
         BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st=new StringTokenizer(br.readLine());
 
         N=Integer.parseInt(st.nextToken());
+
         st=new StringTokenizer(br.readLine());
-        M=Integer.parseInt(st.nextToken());
+        int Z=Integer.parseInt(st.nextToken());
 
         map=new boolean[N+1][N+1];
         v=new boolean[N+1];
 
-        for (int i = 1; i <= M ; i++) {
+        for(int z=0;z<Z;z++){
             st=new StringTokenizer(br.readLine());
-            int n=Integer.parseInt(st.nextToken());
-            int m=Integer.parseInt(st.nextToken());
 
-            map[n][m]=true;
-            map[m][n]=true;
+            int x1=Integer.parseInt(st.nextToken());
+            int x2=Integer.parseInt(st.nextToken());
+
+            map[x1][x2]=true;
+            map[x2][x1]=true;
+
         }
 
-        for(int i=2;i<=N;i++){
-            if(map[1][i])q.offer(i);
-        }
+        dfs(1);
 
-        BFS();
-
-        for (int i = 2; i <=N ; i++) {
-            if(v[i])answer+=1;
-        }
         System.out.println(answer);
     }
 
-    private static void BFS() {
-        while (!q.isEmpty()){
-            int n=q.poll();
-            v[n]=true;
+    public static void dfs(int node){
+        v[node]=true;
 
-            for (int i = 1; i <=N; i++) {
-                if(!v[i] && map[n][i])q.offer(i);
+        for(int i=1;i<=N;i++){
+            if(!v[i] && map[node][i]){
+                answer+=1;
+                dfs(i);
             }
         }
     }

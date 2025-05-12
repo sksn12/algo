@@ -16,11 +16,7 @@ class Solution {
             if(c=='(')stack.push(c);
             else{
                 if(stack.size()==0)return false;
-                
                 Character tmp=stack.pop();
-                if(tmp!='('){
-                    return false;
-                }
             }
         }
         

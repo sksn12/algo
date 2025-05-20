@@ -1,75 +1,79 @@
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 public class Main {
-    static class Node implements Comparable<Node>{
-        int n;
-        int w;
+    static int V,E;
 
-        Node(int n,int w){
-            this.n=n;
-            this.w=w;
+    static class Node implements Comparable<Node>{
+        int next;
+        int cost;
+
+        Node(int next,int cost){
+            this.next=next;
+            this.cost=cost;
         }
 
         @Override
         public int compareTo(Node n){
-            return this.w-n.w;
+            return this.cost-n.cost;
         }
     }
-    static int N,M;
-    static List<Node>[] map;
+
     static Queue<Node> q=new PriorityQueue<>();
-    static int[] d;
+    static int[] answer;
+    static List<Node>[] map;
 
     public static void main(String[] args) throws IOException {
-        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st=new StringTokenizer(br.readLine());
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
-        N=Integer.parseInt(st.nextToken());
-        M=Integer.parseInt(st.nextToken());
+        V=Integer.parseInt(st.nextToken());
+        E=Integer.parseInt(st.nextToken());
 
-        map=new List[N+1];
-        d=new int[N+1];
+        int S=Integer.parseInt(br.readLine());
 
-        for (int i = 1; i <=N ; i++) {
+        map=new List[V+1];
+
+        for(int i=0;i<=V;i++){
             map[i]=new ArrayList<>();
         }
 
-        Arrays.fill(d,Integer.MAX_VALUE);
-
-        int s=Integer.parseInt(br.readLine());
-
-        for (int i = 1; i <=M ; i++) {
+        for(int i=0;i<E;i++){
             st=new StringTokenizer(br.readLine());
 
-            int n=Integer.parseInt(st.nextToken());
-            int m=Integer.parseInt(st.nextToken());
-            int w=Integer.parseInt(st.nextToken());
+            int n1=Integer.parseInt(st.nextToken());
+            int n2=Integer.parseInt(st.nextToken());
+            int cost=Integer.parseInt(st.nextToken());
 
-            map[n].add(new Node(m,w));
+            map[n1].add(new Node(n2,cost));
         }
 
-        d[s]=0;
-        q.offer(new Node(s,0));
-        dijkstra();
+        answer=new int[V+1];
+        Arrays.fill(answer,Integer.MAX_VALUE);
+        q.offer(new Node(S,0));
+        answer[S]=0;
+        dij();
 
-        for (int i=1;i<d.length;i++) {
-            if(d[i]==Integer.MAX_VALUE) System.out.println("INF");
-            else System.out.println(d[i]);
+        for(int i=1;i<=V;i++){
+            if(answer[i]==Integer.MAX_VALUE){
+                System.out.println("INF");
+            }else{
+                System.out.println(answer[i]);
+            }
         }
     }
 
-    private static void dijkstra() {
-        while (!q.isEmpty()){
-            Node n=q.poll();
+    public static void dij(){
+        while(!q.isEmpty()){
+            Node preNode=q.poll();
 
-            for (Node now:map[n.n]) {
-                if(d[now.n]>now.w+n.w){
-                    d[now.n]=now.w+n.w;
-                    q.offer(new Node(now.n,d[now.n]));
+            for(int i=0;i<map[preNode.next].size();i++){
+                Node nextNode=map[preNode.next].get(i);
+
+                if(preNode.cost+nextNode.cost<answer[nextNode.next]){
+                    answer[nextNode.next]=preNode.cost+nextNode.cost;
+                    q.offer(new Node(nextNode.next,preNode.cost+nextNode.cost));
                 }
             }
         }

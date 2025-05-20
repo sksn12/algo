@@ -1,79 +1,71 @@
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 public class Main {
+    static int N,E;
     static class Node implements Comparable<Node>{
         int next;
-        int w;
-
-        Node(int next,int w){
+        int cost;
+        Node(int next,int cost){
             this.next=next;
-            this.w=w;
+            this.cost=cost;
         }
-
         @Override
         public int compareTo(Node n){
-            return this.w-n.w;
+            return this.cost-n.cost;
         }
     }
-    static int N,M,answer=0;
-    static List<Node>[] map;
+
     static Queue<Node> pq=new PriorityQueue<>();
     static boolean[] v;
-
+    static List<Node>[] map;
+    static int answer=0;
     public static void main(String[] args) throws IOException {
-        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st=new StringTokenizer(br.readLine());
-
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
         N=Integer.parseInt(st.nextToken());
-        M=Integer.parseInt(br.readLine());
 
-        map=new List[N+1];
+        st=new StringTokenizer(br.readLine());
+        E=Integer.parseInt(st.nextToken());
+
         v=new boolean[N+1];
+        map=new ArrayList[N+1];
 
-        for (int i = 1; i <= N; i++) {
+        for(int i=0;i<map.length;i++){
             map[i]=new ArrayList<>();
         }
 
-        for (int i = 0; i < M; i++) {
+        for(int i=0;i<E;i++){
             st=new StringTokenizer(br.readLine());
 
             int n1=Integer.parseInt(st.nextToken());
             int n2=Integer.parseInt(st.nextToken());
-            int w=Integer.parseInt(st.nextToken());
+            int cost=Integer.parseInt(st.nextToken());
 
-            map[n1].add(new Node(n2,w));
-            map[n2].add(new Node(n1,w));
+            map[n1].add(new Node(n2,cost));
+            map[n2].add(new Node(n1,cost));
         }
 
-        v[1]=true;
-        for (Node n:map[1]) {
-            pq.offer(new Node(n.next,n.w));
-        }
-
+        pq.offer(new Node(1,0));
         Prim();
 
         System.out.println(answer);
     }
 
-    private static void Prim() {
-        while (!pq.isEmpty()){
+    public static void Prim(){
+        while(!pq.isEmpty()){
             Node n=pq.poll();
 
-            if(v[n.next])continue;
+            if(!v[n.next]){
+                v[n.next]=true;
+                answer+=n.cost;
 
-            v[n.next]=true;
-            answer+=n.w;
-
-            for (Node nn:map[n.next]) {
-                if(!v[nn.next]){
-                    pq.add(new Node(nn.next,nn.w));
+                for(int i=0;i<map[n.next].size();i++){
+                    Node nextNode=map[n.next].get(i);
+                    pq.offer(new Node(nextNode.next,nextNode.cost));
                 }
             }
         }
-
     }
 }

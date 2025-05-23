@@ -1,74 +1,85 @@
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-    static class Node{
-        int y,x,state;
-
-        Node(int y,int x,int state){
-            this.y=y;
-            this.x=x;
-            this.state=state;
-        }
-    }
-    static int N,answer=0;
+    static int N;
     static int[][] map;
-    static Queue<Node> q=new LinkedList<>();
     static int[] dy={0,1,1};
     static int[] dx={1,0,1};
+    static int answer=0;
 
     public static void main(String[] args) throws IOException {
-        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st=new StringTokenizer(br.readLine());
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
         N=Integer.parseInt(st.nextToken());
         map=new int[N][N];
 
-        for (int i = 0; i < N; i++) {
+        for(int i=0;i<N;i++){
             st=new StringTokenizer(br.readLine());
-            for (int j = 0; j < N; j++) {
+            for(int j=0;j<N;j++){
                 map[i][j]=Integer.parseInt(st.nextToken());
             }
         }
 
-        if(map[N-1][N-1]==1){
-            System.out.println(answer);
-            return;
-        }
-        // 가로는 0 세로는 1 대각은 2 (현재 파이프의 상태), 파이프의 앞 쪽의 위치만 기억
-        q.offer(new Node(0,1,0));
-
-        BFS();
+        // 현재 파이프 끝점의 y,x , 모양
+        DFS(0,1,"vertical");
 
         System.out.println(answer);
     }
 
-    private static void BFS() {
-        while (!q.isEmpty()){
-            Node n=q.poll();
+    public static void DFS(int Y,int X,String shape){
+        if(Y==N-1 && X==N-1){
+            answer+=1;
+            return;
+        }
 
-            boolean val=false;
-            for (int d = 0; d <3; d++) {
-                // 우 아래를 검사해봤을때 하나라도 갈 수 없었던 값이 있었다면 대각은 갈 수 없음
-                if(d==2 && val)continue;
+        if(shape.equals("vertical")){
+            vertical_val(Y,X);
+            cross_line_val(Y,X);
+        }else if(shape.equals("hor")){
+            hor_val(Y,X);
+            cross_line_val(Y,X);
+        }else if(shape.equals("crossLine")){
+            vertical_val(Y,X);
+            hor_val(Y,X);
+            cross_line_val(Y,X);
+        }
+    }
 
-                int ny=n.y+dy[d];
-                int nx=n.x+dx[d];
+    public static void vertical_val(int Y,int X){
+        int ny=dy[0]+Y;
+        int nx=dx[0]+X;
 
-                if(0<=ny && 0<=nx && ny<N && nx<N && map[ny][nx]==0){
-                    // 밑에 로직을 이 조건문 안에 넣은 이유는 현재 파이프가 가로 상태일때 아래로는 갈 수 없지만 대각선을 위해 검사하고 pass
-                    if(n.state==0 && d==1)continue;
-                    else if (n.state==1 && d==0)continue;
+        if(0<=ny && 0<=nx && ny<N && nx<N && map[ny][nx]==0){
+            DFS(ny,nx,"vertical");
+        }
+    }
 
-                    if(ny==N-1 && nx==N-1)answer+=1;
-                    else q.offer(new Node(ny,nx,d));
-                }else val=true;
+    public static void hor_val(int Y,int X){
+        int ny=dy[1]+Y;
+        int nx=dx[1]+X;
+
+        if(0<=ny && 0<=nx && ny<N && nx<N && map[ny][nx]==0){
+            DFS(ny,nx,"hor");
+        }
+    }
+
+    public static void cross_line_val(int Y,int X){
+        boolean check=false;
+        for(int d=0;d<3;d++){
+            int ny=dy[d]+Y;
+            int nx=dx[d]+X;
+
+            if(0<=ny && 0<=nx && ny<N && nx<N && map[ny][nx]==0){
+            }else{
+                check=true;
             }
+        }
+
+        if(!check){
+            DFS(Y+dy[2],X+dx[2],"crossLine");
         }
     }
 }

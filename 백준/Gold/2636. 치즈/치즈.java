@@ -1,17 +1,15 @@
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    static int Y,X,answer=0;
+    static int Y,X;
     static int[][] map;
-    static List<int[]> list;
-    static int[] dy={1,-1,0,0};
-    static int[] dx={0,0,-1,1};
     static boolean[][] v;
     static Queue<int[]> q;
+    static int[] dy={0,0,-1,1};
+    static int[] dx={1,-1,0,0};
 
     public static void main(String[] args) throws IOException {
         BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
@@ -22,93 +20,78 @@ public class Main {
 
         map=new int[Y][X];
 
-        for (int i = 0; i < Y; i++) {
+        for(int i=0;i<Y;i++){
             st=new StringTokenizer(br.readLine());
-            for (int j = 0; j < X; j++) {
+            for(int j=0;j<X;j++){
                 map[i][j]=Integer.parseInt(st.nextToken());
             }
         }
 
-        while (true){
-            list=new ArrayList<>();
-            v=new boolean[Y][X];
-            q=new LinkedList<>();
-            
-            v[0][0]=true;
-            q.offer(new int[] {0,0});
-            BFS();
+        int pre=counting();
+        int T=0;
 
-            Search();
-
-            Delete();
-
-            if(Confirm()){
-                System.out.println(answer+1);
-                System.out.println(list.size());
-                break;
-            }
-
-            answer+=1;
-
+        // 0. 치즈가 아예 없을 경우 예외처리
+        if(pre==0){
+            System.out.println(T);
+            System.out.println(pre);
+            return;
         }
+
+        while(true){
+            T+=1;
+
+            // 1. 초기화
+            q=new LinkedList<>();
+            v=new boolean[Y][X];
+            q.offer(new int[] {0,0});
+            v[0][0]=true;
+
+            // 2. 공기층과 맞닿은 치즈 녹이기
+            melting();
+
+            // 3. 남은 치즈 갯수 카운팅
+            int cnt=counting();
+
+            if(cnt==0)break;
+
+            pre=cnt;
+        }
+
+        System.out.println(T);
+        System.out.println(pre);
     }
 
-    private static void BFS() {
-        while (!q.isEmpty()){
+    public static int counting(){
+        int cnt=0;
+
+        for(int i=0;i<Y;i++){
+            for(int j=0;j<X;j++){
+                if(map[i][j]==1)cnt+=1;
+            }
+        }
+
+        return cnt;
+    }
+
+    public static void melting(){
+        while(!q.isEmpty()){
             int[] yx=q.poll();
 
-            for (int d = 0; d <4; d++) {
+            for(int d=0;d<4;d++){
                 int ny=dy[d]+yx[0];
                 int nx=dx[d]+yx[1];
-                
-                if(0<=ny && 0<=nx && ny<Y && nx<X && !v[ny][nx] && map[ny][nx]==0){
+
+                if(0<=ny && 0<=nx && ny<Y && nx<X && !v[ny][nx]){
                     v[ny][nx]=true;
-                    q.offer(new int[] {ny,nx});
-                }
-            }
-        }
-    }
 
-    private static boolean Confirm() {
-        for (int i = 1; i < Y-1; i++) {
-            for (int j = 1; j <X-1 ; j++) {
-                if(map[i][j]==1)return false;
-            }
-        }
-        return true;
-    }
-
-    private static void Delete() {
-        for (int[] yx:list) {
-            int y=yx[0];
-            int x=yx[1];
-
-            map[y][x]=0;
-        }
-    }
-
-    private static void Search() {
-        for (int i = 1; i < Y-1; i++) {
-            for (int j = 1; j < X-1; j++) {
-                // 치즈면 사방탐색 후 0을 한번이라도 만나면 list넣기
-                if(map[i][j]==1){
-                    boolean val=false;
-                    for (int d = 0; d < 4; d++) {
-                        int ny=i+dy[d];
-                        int nx=j+dx[d];
-
-                        if(0<=ny && 0<=nx && ny<Y && nx<X && v[ny][nx]){
-                            if(map[ny][nx]==0)val=true;
-                        }
-                    }
-
-                    // 공기층을 만날때
-                    if(val){
-                        list.add(new int[] {i,j});
-                    }
+                    // 전진하는 값이 0이면 치즈가 없다는 뜻임으로 q에 넣음, 치즈면 공기층과 만나서 녹아 q에 넣지 않음
+                    // q에는 이전에 공기층이였던 값의 위치만 들어가니깐 해당 조건 성립
+                    if(map[ny][nx]==0)q.offer(new int[] {ny,nx});
+                    else if(map[ny][nx]==1)map[ny][nx]=0;
                 }
             }
         }
 
+        return;
     }
 }

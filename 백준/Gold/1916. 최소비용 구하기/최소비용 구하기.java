@@ -2,77 +2,89 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
+    static int N,M;
     static class Node implements Comparable<Node>{
-        int node;
+        int n;
         int cost;
 
-        Node(int node,int cost){
-            this.node=node;
+        Node(int n,int cost){
+            this.n=n;
             this.cost=cost;
         }
 
         @Override
-        public int compareTo(Node node){
-            return this.cost-node.cost;
+        public int compareTo(Node n){
+            return this.cost-n.cost;
         }
     }
-
-    static int N,M,S,E;
-    static List<Node>[] graph;
-    static int[] cost;
     static PriorityQueue<Node> pq=new PriorityQueue<>();
+    static List<Node>[] map;
+    static int[] d;
+    static int s,e;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
         N=Integer.parseInt(st.nextToken());
-        M=Integer.parseInt(br.readLine());
+        st = new StringTokenizer(br.readLine());
+        M=Integer.parseInt(st.nextToken());
 
-        graph=new List[N+1];
-
-        for (int i = 0; i <=N ; i++) {
-            graph[i]=new ArrayList<>();
+        map=new List[N+1];
+        for(int i=1;i<=N;i++){
+            map[i]=new ArrayList<>();
         }
+
+        d=new int[N+1];
+        Arrays.fill(d,Integer.MAX_VALUE);
 
         for (int i = 0; i < M; i++) {
             st=new StringTokenizer(br.readLine());
 
             int n=Integer.parseInt(st.nextToken());
             int m=Integer.parseInt(st.nextToken());
-            int c=Integer.parseInt(st.nextToken());
+            int w=Integer.parseInt(st.nextToken());
 
-            graph[n].add(new Node(m,c));
+            map[n].add(new Node(m,w));
         }
 
         st=new StringTokenizer(br.readLine());
+        s=Integer.parseInt(st.nextToken());
+        e=Integer.parseInt(st.nextToken());
 
-        S=Integer.parseInt(st.nextToken());
-        E=Integer.parseInt(st.nextToken());
+        d[s]=0;
+        pq.offer(new Node(s,0));
 
-        cost=new int[N+1];
-        Arrays.fill(cost,Integer.MAX_VALUE);
-        cost[S]=0;
-        pq.offer(new Node(S,0));
+        dijstra();
 
-        dijkstra();
-
-        System.out.println(cost[E]);
+        System.out.println(d[e]);
     }
 
-    public static void dijkstra(){
+    public static void dijstra(){
         while (!pq.isEmpty()){
             Node n=pq.poll();
 
-            if (n.cost > cost[n.node]) continue;
+            if(n.cost>d[n.n])continue;
             
-            for(int i=0;i<graph[n.node].size();i++){
-                // 이전 노드의 비용 + 현재 비용 < 기존 비용보다 작다면 값을 넣어줌
-                if(cost[n.node] + graph[n.node].get(i).cost < cost[graph[n.node].get(i).node]){
-                    cost[graph[n.node].get(i).node]=cost[n.node] + graph[n.node].get(i).cost;
-                    pq.offer(new Node(graph[n.node].get(i).node,cost[graph[n.node].get(i).node]));
+            for (int i = 0; i < map[n.n].size(); i++) {
+                Node node=map[n.n].get(i);
+                int total_cost=node.cost+n.cost;
+
+                if(total_cost<d[node.n]){
+                    d[node.n]=total_cost;
+                    pq.offer(new Node(node.n,total_cost));
                 }
             }
         }
     }
+
+
+
+
+
+
+
+
+
+
 }

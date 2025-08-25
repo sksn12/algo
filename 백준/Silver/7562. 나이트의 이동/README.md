@@ -16,7 +16,7 @@
 
 <p><img alt="" src="https://www.acmicpc.net/upload/images/knight.png" style="height:172px; width:175px"></p>
 
-### 입력 
+### 백준입력 
 
  <p>입력의 첫째 줄에는 테스트 케이스의 개수가 주어진다.</p>
 

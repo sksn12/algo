@@ -5,8 +5,11 @@ import java.util.*;
 
 public class 순조부 {
 
-    static int arr[] = { 1, 2, 3, 4 };
-    static int path[];
+    // 트리 구조로 생각
+    // 내가 고르려는 갯수(level) 까지만 고르고 출력
+
+    static int arr[] = { 7,9,1,4 };
+    static int node[];
     static boolean[] v=new boolean[4];
     static boolean[] select = new boolean[arr.length];
     static int num=0;
@@ -14,12 +17,12 @@ public class 순조부 {
     // 순열
     static void dfs1(int level) {
         if(level==4){
-            System.out.println(Arrays.toString(path));
+            System.out.println(Arrays.toString(node));
             return;
         }
 
         for (int i = 0; i < arr.length; i++) {
-            path[level]=arr[i];
+            node[level]=arr[i];
             dfs1(level+1);
         }
 
@@ -27,15 +30,15 @@ public class 순조부 {
 
     // 순열(중복제거)
     static void dfs4(int level) {
-        if(level==3){
-            System.out.println(Arrays.toString(path));
+        if(level==4){
+            System.out.println(Arrays.toString(node));
             return;
         }
 
         for (int i = 0; i < arr.length; i++) {
             if(!v[i]){
                 v[i]=true;
-                path[level]=arr[i];
+                node[level]=arr[i];
                 dfs4(level+1);
                 v[i]=false;
             }
@@ -45,13 +48,13 @@ public class 순조부 {
 
     // 조합
     static void dfs2(int start, int level) {
-        if(level==path.length){
-            System.out.println(Arrays.toString(path));
+        if(level==node.length){
+            System.out.println(Arrays.toString(node));
             return;
         }
 
         for (int i = start; i < arr.length; i++) {
-            path[level]=arr[i];
+            node[level]=arr[i];
             dfs2(i+1,level+1);
         }
 
@@ -76,16 +79,18 @@ public class 순조부 {
 
     }
 
+    // 순열, 조합, 중복제거 순열은 다 한끗차이임
     public static void main(String[] args) {
 
-        path = new int[3];
+        node = new int[4];
 
 //         순열
-//        dfs1(0);
-        dfs2(0,0);
+        dfs1(0);
+//        dfs2(0,0);
+
 //        dfs3(0);
 //        dfs4(0);
-        System.out.println(num);
+//        System.out.println(num);
     }
 
 }

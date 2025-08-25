@@ -1,43 +1,36 @@
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Constructor;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
 public class Main {
-    static int N,ey,ex,cnt;
-    static boolean[][] map;
+    static int N,ey,ex;
     static int[] dy={-2,-1,1,2,2,1,-1,-2};
     static int[] dx={1,2,2,1,-1,-2,-2,-1};
-    static Queue<Node> q;
+    static int[][] map;
 
     static class Node{
-        int y;
-        int x;
-        int cnt;
+        int y,x,cnt;
 
         Node(int y,int x,int cnt){
             this.y=y;
             this.x=x;
             this.cnt=cnt;
         }
-
     }
+    static Queue<Node> q;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException{
         BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-        int T=Integer.parseInt(br.readLine());
+        StringTokenizer st=new StringTokenizer(br.readLine());
 
-        for (int tc = 0; tc < T; tc++) {
-            N=Integer.parseInt(br.readLine());
-            map=new boolean[N][N];
+        int T=Integer.parseInt(st.nextToken());
+
+        for(int tc=0;tc<T;tc++){
+            st=new StringTokenizer(br.readLine());
+            N=Integer.parseInt(st.nextToken());
+
             q=new LinkedList<>();
-            cnt=0;
 
-            StringTokenizer st=new StringTokenizer(br.readLine());
+            st=new StringTokenizer(br.readLine());
             int sy=Integer.parseInt(st.nextToken());
             int sx=Integer.parseInt(st.nextToken());
 
@@ -47,33 +40,35 @@ public class Main {
             ey=Integer.parseInt(st.nextToken());
             ex=Integer.parseInt(st.nextToken());
 
+            map=new int[N][N];
+
+            if(sy==ey && sx==ex){
+                System.out.println(0);
+                continue;
+            }
             BFS();
         }
-
-
-
     }
 
-    private static void BFS() {
-        while (!q.isEmpty()){
-            Node node=q.poll();
+    public static void BFS(){
+        while(!q.isEmpty()){
+            Node n=q.poll();
 
-            if(node.y==ey && node.x==ex){
-                System.out.println(node.cnt);
-                break;
-            }
+            for(int d=0;d<8;d++){
+                int ny=n.y+dy[d];
+                int nx=n.x+dx[d];
 
-            for (int d = 0; d < 8; d++) {
-                int ny=node.y+dy[d];
-                int nx=node.x+dx[d];
+                if(0<=ny && ny<N && 0<=nx && nx<N && map[ny][nx]==0){
+                    map[ny][nx]=1;
 
-                if(0<=ny && 0<=nx && ny<N && nx<N && !map[ny][nx]){
-                    map[ny][nx]=true;
-                    q.offer(new Node(ny,nx, node.cnt+1));
+                    if(ny==ey && nx==ex){
+                        System.out.println(n.cnt+1);
+                        return;
+                    }
+
+                    q.offer(new Node(ny,nx,n.cnt+1));
                 }
             }
         }
-
     }
 }
-

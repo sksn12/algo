@@ -1,83 +1,93 @@
+
 import java.io.*;
 import java.util.*;
 
 public class Main {
-    static class Node implements Comparable<Node> {
-        int vertex, cost;
-        Node(int vertex, int cost) {
-            this.vertex = vertex;
-            this.cost = cost;
+    static int N,E;
+    static class Node implements Comparable<Node>{
+        int number;
+        int cost;
+
+        Node(int number,int cost){
+            this.number=number;
+            this.cost=cost;
         }
+
         @Override
-        public int compareTo(Node o) {
-            return this.cost - o.cost;
+        public int compareTo(Node n){
+            return this.cost-n.cost;
         }
     }
 
-    static int N, E;
-    static List<Node>[] graph;
-    static final int INF = 200000000; // 충분히 큰 값
+    static PriorityQueue<Node> pq;
+    static List<Node>[] map;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        N = Integer.parseInt(st.nextToken());
-        E = Integer.parseInt(st.nextToken());
+        N=Integer.parseInt(st.nextToken());
+        E=Integer.parseInt(st.nextToken());
 
-        graph = new ArrayList[N + 1];
-        for (int i = 1; i <= N; i++) {
-            graph[i] = new ArrayList<>();
+        map=new List[N+1];
+
+        for (int i = 0; i <= N; i++) {
+            map[i]=new ArrayList<>();
         }
 
         for (int i = 0; i < E; i++) {
-            st = new StringTokenizer(br.readLine());
-            int a = Integer.parseInt(st.nextToken());
-            int b = Integer.parseInt(st.nextToken());
-            int c = Integer.parseInt(st.nextToken());
-            graph[a].add(new Node(b, c));
-            graph[b].add(new Node(a, c)); // 양방향
+            st=new StringTokenizer(br.readLine());
+
+            int n1=Integer.parseInt(st.nextToken());
+            int n2=Integer.parseInt(st.nextToken());
+            int c=Integer.parseInt(st.nextToken());
+
+            map[n1].add(new Node(n2,c));
+            map[n2].add(new Node(n1,c));
         }
+        st=new StringTokenizer(br.readLine());
+        int v1=Integer.parseInt(st.nextToken());
+        int v2=Integer.parseInt(st.nextToken());
 
-        st = new StringTokenizer(br.readLine());
-        int v1 = Integer.parseInt(st.nextToken());
-        int v2 = Integer.parseInt(st.nextToken());
 
-        // 1, v1, v2에서 각각 다익스트라 실행
-        int[] dist1 = dijkstra(1);
-        int[] distV1 = dijkstra(v1);
-        int[] distV2 = dijkstra(v2);
+        int[] dist1 = dijkstra(1); // 시작 노드에서 들려야 하는 첫 정점의 거리
+        int[] distV1 = dijkstra(v1); // 첫 정점과 두번째 정점의 거리
+        int[] distV2 = dijkstra(v2); // 두번째 정점과 도착지점 N의 거리
 
-        // 두 가지 경로 계산
         long path1 = (long)dist1[v1] + distV1[v2] + distV2[N]; // 1 → v1 → v2 → N
         long path2 = (long)dist1[v2] + distV2[v1] + distV1[N]; // 1 → v2 → v1 → N
 
         long answer = Math.min(path1, path2);
-        System.out.println(answer >= INF ? -1 : answer);
+        System.out.println(answer >= Integer.MAX_VALUE ? -1 : answer);
     }
 
-    // 다익스트라 함수
-    static int[] dijkstra(int start) {
-        PriorityQueue<Node> pq = new PriorityQueue<>();
+    public static int[] dijkstra(int start){
+        pq=new PriorityQueue<>();
         int[] dist = new int[N + 1];
-        Arrays.fill(dist, INF);
+        Arrays.fill(dist,Integer.MAX_VALUE);
         dist[start] = 0;
         pq.offer(new Node(start, 0));
 
-        while (!pq.isEmpty()) {
-            Node cur = pq.poll();
+        while (!pq.isEmpty()){
+            Node n=pq.poll();
 
-            if (cur.cost > dist[cur.vertex]) continue;
+            // 이미 확정된 최단 거리보다 크면 스킵
+            if (n.cost > dist[n.number]) continue;
 
-            for (Node next : graph[cur.vertex]) {
-                int newCost = cur.cost + next.cost;
-                if (newCost < dist[next.vertex]) {
-                    dist[next.vertex] = newCost;
-                    pq.offer(new Node(next.vertex, newCost));
+            for (int i = 0; i < map[n.number].size(); i++) {
+                Node numberNode=map[n.number].get(i);
+                int cost=numberNode.cost+n.cost;
+
+                if(cost<dist[numberNode.number]){
+                    dist[numberNode.number]=cost;
+                    pq.offer(new Node(numberNode.number,cost));
+
                 }
             }
         }
 
         return dist;
     }
+
+
 }

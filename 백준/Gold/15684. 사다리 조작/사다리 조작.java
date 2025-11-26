@@ -1,3 +1,4 @@
+
 import java.io.*;
 import java.util.*;
 
@@ -38,12 +39,13 @@ public class Main {
 
         if(count == 3) return;
 
-        for(int i=row; i<=H; i++, col=1){
-            for(int j=col; j<N; j++){
-                if(ladder[i][j] || ladder[i][j-1] || ladder[i][j+1]) continue;
+        for (int i = row; i <= H; i++) {
+            int startCol = (i == row ? col : 1);  // 첫 줄만 col부터, 그 다음 줄은 1부터
+            for (int j = startCol; j < N; j++) {
+                if (ladder[i][j] || ladder[i][j - 1] || ladder[i][j + 1]) continue;
 
                 ladder[i][j] = true;
-                dfs(count+1, i, j+1);
+                dfs(count + 1, i, j + 1);
                 ladder[i][j] = false;
             }
         }

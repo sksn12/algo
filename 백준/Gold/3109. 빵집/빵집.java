@@ -1,18 +1,24 @@
+import java.util.*;
+import java.io.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+/*
+        5 5
+        .xx..
+        ..x..
+        .....
+        ...x.
+        ...x.
+ */
 
 public class Main {
-    static int Y,X,flag;
+    static int Y,X;
+    static boolean val;
     static char[][] map;
     static boolean[][] v;
     static int[] dy={-1,0,1};
     static int[] dx={1,1,1};
     static int answer=0;
-
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException{
         BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st=new StringTokenizer(br.readLine());
 
@@ -20,7 +26,6 @@ public class Main {
         X=Integer.parseInt(st.nextToken());
 
         map=new char[Y][X];
-        v=new boolean[Y][X];
 
         for (int i = 0; i < Y; i++) {
             String str=br.readLine();
@@ -29,40 +34,36 @@ public class Main {
             }
         }
 
+        v=new boolean[Y][X];
 
-        // 시작열에서 갈 수 있는 모든 경우 탐색 방문배열은 공유
-        // 오른쪽 위부터 오른쪽 오른쪽 아래 순으로 dfs를 타게되면 파이프라인이 가장 위부터 순서대로 만들어 짐으로
-        // 가장 많은 경우의 수가 생성된다.
-        for (int i = 0; i < Y; i++) {
-            flag=0;
+        for(int i=0;i<Y;i++){
+            val=false;
             dfs(i,0);
-            
         }
         System.out.println(answer);
-
-
     }
 
-    private static void dfs(int y, int x) {
-        if(flag==1)return;
-        for (int d = 0; d < 3; d++) {
-            int ny=dy[d]+y;
-            int nx=dx[d]+x;
+    // 방문 배열을 공유해야해서 참조형인 방문배열을 별도의 백트래킹으로 왔던길을 사용안함 처리를 하지 않음
+    public static void dfs(int y,int x){
+        if(val)return;
 
-            if(flag==1)return;
+        for(int d=0;d<3;d++){
+            int ny=y+dy[d];
+            int nx=x+dx[d];
 
-            if(0<=ny && 0<=nx && ny<Y && nx<X && !v[ny][nx] && map[ny][nx]=='.'){
+            if(val)return;
+
+            if(0<=ny && ny<Y && 0<=nx && nx<X && !v[ny][nx] && map[ny][nx]!='x'){
                 v[ny][nx]=true;
-                // 끝 열에 도착 할 수 있으면 +1
+
                 if(nx==X-1){
                     answer+=1;
-                    flag=1;
-                    return;
+                    val=true;
+                    return; // 여기에 return 넣는 이유는 3개로 갈 수 있는 경로에서 다음 경로로 가면 나머지 경로로 못가게
                 }
                 dfs(ny,nx);
-                // 순서대로 전진이 하나라도 가능하다면 해당 위치에서 dfs 가짓수를 없애야함
+
             }
         }
-
     }
 }

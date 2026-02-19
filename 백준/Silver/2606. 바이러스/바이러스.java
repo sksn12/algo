@@ -1,51 +1,59 @@
-import java.util.*;
+
 import java.io.*;
+import java.util.*;
 
-public class Main{
-    static int N;
-    static List<List<Integer>> map;
+public class Main {
+    static int N,M;
+    static Queue<Integer> q;
     static boolean[] v;
-    static int answer=0;
+    static List[] graph;
 
-    public static void main(String[] args) throws IOException{
-        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st=new StringTokenizer(br.readLine());
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
         N=Integer.parseInt(st.nextToken());
+        M=Integer.parseInt(br.readLine());
 
-        st=new StringTokenizer(br.readLine());
-        int Z=Integer.parseInt(st.nextToken());
-
-        map=new ArrayList<>();
         v=new boolean[N+1];
+        q=new ArrayDeque<>();
+        graph=new ArrayList[N+1];
 
-        for(int i=0;i<=N;i++){
-            map.add(new ArrayList<>());
+        for (int i = 1; i <=N; i++) {
+            graph[i]=new ArrayList();
         }
 
-        for(int z=0;z<Z;z++){
+        for (int i = 0; i < M; i++) {
             st=new StringTokenizer(br.readLine());
+            int n=Integer.parseInt(st.nextToken());
+            int b=Integer.parseInt(st.nextToken());
 
-            int x1=Integer.parseInt(st.nextToken());
-            int x2=Integer.parseInt(st.nextToken());
-
-            map.get(x1).add(x2);
-            map.get(x2).add(x1);
-            
+            graph[n].add(b);
+            graph[b].add(n);
         }
 
-        dfs(1);
+        q.add(1);
+        v[1]=true;
+        BFS();
+
+        int answer=0;
+        for (int i = 2; i <= N; i++) {
+            if(v[i])answer+=1;
+        }
 
         System.out.println(answer);
     }
 
-    public static void dfs(int node){
-        v[node]=true;
+    public static void BFS(){
+        while (!q.isEmpty()){
+            int node=q.poll();
 
-        for(int j=0;j<map.get(node).size();j++){
-            if(!v[map.get(node).get(j)]){
-                answer += 1;
-                dfs(map.get(node).get(j));
+            for (int i = 0; i < graph[node].size(); i++) {
+                int next=(int)graph[node].get(i);
+                if(!v[next]){
+                    v[next]=true;
+                    q.add(next);
+                }
             }
         }
     }

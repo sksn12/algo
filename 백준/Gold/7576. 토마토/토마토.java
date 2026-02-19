@@ -1,87 +1,71 @@
-import java.util.*;
+
 import java.io.*;
+import java.util.*;
 
 public class Main {
-    static int X,Y;
+    static int[] dy={-1,1,0,0};
+    static int[] dx={0,0,-1,1};
     static int[][] map;
-    static int[] dy={-1,0,1,0};
-    static int[] dx={0,1,0,-1};
-    static Queue<int[]> q=new LinkedList<>();;
+    static int Y,X;
+    static Queue<int[]> q=new ArrayDeque<>();
+    static int day=0;
 
-
-    public static void main(String[] args) throws IOException{
-        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st=new StringTokenizer(br.readLine());
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
         X=Integer.parseInt(st.nextToken());
         Y=Integer.parseInt(st.nextToken());
-
         map=new int[Y][X];
 
-        for(int i=0;i<Y;i++){
+        for (int i = 0; i < Y; i++) {
             st=new StringTokenizer(br.readLine());
-            for(int j=0;j<X;j++){
+            for (int j = 0; j < X; j++) {
                 map[i][j]=Integer.parseInt(st.nextToken());
             }
         }
 
-        boolean t=false;
-        for(int i=0;i<Y;i++){
-            for(int j=0;j<X;j++){
-                if(map[i][j]==0)t=true;
-            }
-        }
-
-        if(!t){
-            System.out.println(0);
-            return;
-        }
-
-        for(int i=0;i<Y;i++){
-            for(int j=0;j<X;j++){
-                if(map[i][j]==1)q.offer(new int[] {i,j,0});
+        for (int i = 0; i < Y; i++) {
+            for (int j = 0; j < X; j++) {
+                if(map[i][j]==1)q.offer(new int[] {i,j});
             }
         }
 
         BFS();
 
-        int answer=Integer.MIN_VALUE;
-
-
-        boolean val=false;
-        for(int i=0;i<Y;i++){
-            for(int j=0;j<X;j++){
-                if(val)continue;
-
+        for (int i = 0; i < Y; i++) {
+            for (int j = 0; j < X; j++) {
                 if(map[i][j]==0){
-                    answer=-1;
-                    val=true;
-                    break;
-                }else{
-                    answer=Math.max(map[i][j],answer);
+                    System.out.println(-1);
+                    return;
                 }
             }
         }
 
-        System.out.println(answer);
+        System.out.println(day-1);
     }
 
     public static void BFS(){
-        while(!q.isEmpty()){
-            int[] yxc=q.poll();
-            int y=yxc[0];
-            int x=yxc[1];
-            int cnt=yxc[2];
+        while (!q.isEmpty()){
+            int size=q.size();
 
-            for(int d=0;d<4;d++){
-                int ny=dy[d]+y;
-                int nx=dx[d]+x;
+            for (int i = 0; i < size; i++) {
+                int[] yx=q.poll();
+                int y=yx[0];
+                int x=yx[1];
 
-                if(0<=ny && 0<=nx && ny<Y && nx<X &&  map[ny][nx]==0){
-                    map[ny][nx]=cnt+1;
-                    q.offer(new int[] {ny,nx,cnt+1});
+                for (int d = 0; d < 4; d++) {
+                    int ny=dy[d]+y;
+                    int nx=dx[d]+x;
+
+                    if(0<=ny && 0<=nx && ny<Y && nx<X && map[ny][nx]==0){
+                        map[ny][nx]=1;
+                        q.offer(new int[] {ny,nx});
+                    }
                 }
             }
+
+            day+=1;
         }
     }
 }

@@ -1,85 +1,77 @@
-
 import java.io.*;
 import java.util.*;
 
 public class Main {
-    static int M,N;
+    static int M, N;
     static int[][] map;
-    static int sy,sx;
-    static int[] dy={0,-1,-1};
-    static int[] dx={-1,-1,0};
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        M=Integer.parseInt(st.nextToken());
-        N=Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        N = Integer.parseInt(st.nextToken());
 
-        map=new int[M][M];
+        map = new int[M][M];
 
+        // 기본값 1로 초기화
         for (int i = 0; i < M; i++) {
-            for (int j = 0; j < M; j++) {
-                map[i][j]=1;
-            }
+            Arrays.fill(map[i], 1);
         }
+
+        // 가장자리 길이
+        int size = 2 * M - 1;
+
+        // 차분 배열
+        int[] plus = new int[size + 1];
 
         for (int i = 0; i < N; i++) {
-            st=new StringTokenizer(br.readLine());
-            int zero=Integer.parseInt(st.nextToken());
-            int one=Integer.parseInt(st.nextToken());
-            int two=Integer.parseInt(st.nextToken());
+            st = new StringTokenizer(br.readLine());
+            int zero = Integer.parseInt(st.nextToken());
+            int one = Integer.parseInt(st.nextToken());
+            int two = Integer.parseInt(st.nextToken());
 
-            // 시작 위치
-            sy=M-1; sx=0;
+            // 1 증가 시작
+            plus[zero] += 1;
 
-            for (int j = zero; j>0 ; j--) {
-                if(sy<=0) sx+=1;
-                else sy-=1;
-            }
-
-            for (int j = one; j>0 ; j--) {
-                map[sy][sx]+=1;
-
-                if(sy<=0) sx+=1;
-                else sy-=1;
-            }
-
-            for (int j = two; j>0 ; j--) {
-                map[sy][sx]+=2;
-
-                if(sy<=0) sx+=1;
-                else sy-=1;
-            }
+            // 2 증가 시작 (사실 +1을 한 번 더)
+            plus[zero + one] += 1;
         }
 
-        for (int j = 1; j < M; j++) {
-            for (int k = 1; k < M; k++) {
-                int max=0;
+        // 누적합
+        for (int i = 1; i < size; i++) {
+            plus[i] += plus[i - 1];
+        }
 
-                for (int d = 0; d < 3; d++) {
-                    int ny=j+dy[d];
-                    int nx=k+dx[d];
+        // 가장자리 채우기
+        int sy = M - 1;
+        int sx = 0;
 
-                    if(0<=ny && ny<M && 0<=nx && nx<M){
-                        max=Math.max(map[ny][nx],max);
-                    }
-                }
+        for (int i = 0; i < size; i++) {
+            map[sy][sx] += plus[i];
 
-                map[j][k]=max;
+            if (sy > 0) sy--;
+            else sx++;
+        }
+
+        // 내부 채우기 (왼쪽 위 대각선 값 복사)
+        for (int i = 1; i < M; i++) {
+            for (int j = 1; j < M; j++) {
+                map[i][j] = map[i - 1][j];
             }
         }
 
         print();
-
     }
 
-    public static void print(){
-        for (int i = 0; i <M ; i++) {
+    static void print() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < M; i++) {
             for (int j = 0; j < M; j++) {
-                System.out.printf(map[i][j]+" ");
+                sb.append(map[i][j]).append(" ");
             }
-            System.out.println();
+            sb.append("\n");
         }
+        System.out.print(sb);
     }
 }

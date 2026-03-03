@@ -1,45 +1,47 @@
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-	static int N;
-	static int M;
-	static boolean[] sel;
-	
-	public static void main(String[] args) throws IOException {
-		BufferedReader bf=new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st=new StringTokenizer(bf.readLine());
-		
-		N=Integer.parseInt(st.nextToken());
-		M=Integer.parseInt(st.nextToken());
-		
-		sel=new boolean[N];
-		
-		recursive(0,0);
-	}
-	
-	private static void recursive(int idx,int k) {
-		if(idx==N) {
-			if(k==M) {
-				StringBuilder sb=new StringBuilder();
-				for (int i = 0; i < sel.length; i++) {
-					if(sel[i]) {
-						sb.append((i+1)+" ");
-					}
-				}
-				System.out.println(sb);
-			}
-			return;
-		}
-		
-		sel[idx]=true;
-		recursive(idx+1, k+1);
-		sel[idx]=false;
-		recursive(idx+1, k);
-	}
+    static int N,M;
+    static int[] arr;
+    static int[] sel;
+    static boolean[] v;
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+
+        N=Integer.parseInt(st.nextToken());
+        M=Integer.parseInt(st.nextToken());
+
+        arr=new int[N];
+        sel=new int[M];
+        v=new boolean[N];
+
+        for (int i = 1; i <=N; i++) {
+            arr[i-1]=i;
+        }
+
+        recursive(0,0);
+    }
+
+    public static void recursive(int level,int start){
+        if(level==M){
+            for (int i = 0; i < sel.length; i++) {
+                System.out.printf(sel[i]+" ");
+            }
+            System.out.println();
+            return;
+        }
+
+        for (int i = start; i < N; i++) {
+            if(!v[i]){
+                v[i]=true;
+                sel[level]=arr[i];
+                recursive(level+1,i+1);
+                v[i]=false;
+            }
+        }
+    }
 }

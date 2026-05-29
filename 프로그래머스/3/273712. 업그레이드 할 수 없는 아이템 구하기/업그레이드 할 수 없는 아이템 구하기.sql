@@ -1,5 +1,5 @@
-SELECT A.ITEM_ID, A.ITEM_NAME, A.RARITY
-FROM ITEM_INFO AS A
-LEFT JOIN ITEM_TREE AS B ON A.ITEM_ID = B.PARENT_ITEM_ID
-WHERE B.PARENT_ITEM_ID IS NULL
-ORDER BY A.ITEM_ID DESC;
+select a.item_id, a.item_name, a.rarity
+from item_info as a 
+left join item_tree as b on a.item_id = b.parent_item_id
+where b.parent_item_id is null 
+order by a.item_id desc

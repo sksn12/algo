@@ -1,79 +1,71 @@
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Constructor;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-    static int N,ey,ex,cnt;
+    static int N;
+    static int[] dy={-1,-2,-2,-1,1,2,2,1};
+    static int[] dx={-2,-1,1,2,2,1,-1,-2};
+    static Queue<chass> q;
     static boolean[][] map;
-    static int[] dy={-2,-1,1,2,2,1,-1,-2};
-    static int[] dx={1,2,2,1,-1,-2,-2,-1};
-    static Queue<Node> q;
+    static class chass{
+        int y,x,cnt;
 
-    static class Node{
-        int y;
-        int x;
-        int cnt;
-
-        Node(int y,int x,int cnt){
+        chass(int y,int x,int cnt){
             this.y=y;
             this.x=x;
             this.cnt=cnt;
         }
-
     }
 
     public static void main(String[] args) throws IOException {
-        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-        int T=Integer.parseInt(br.readLine());
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+
+        int T=Integer.parseInt(st.nextToken());
 
         for (int tc = 0; tc < T; tc++) {
             N=Integer.parseInt(br.readLine());
+            q=new ArrayDeque<>();
             map=new boolean[N][N];
-            q=new LinkedList<>();
-            cnt=0;
-
-            StringTokenizer st=new StringTokenizer(br.readLine());
-            int sy=Integer.parseInt(st.nextToken());
-            int sx=Integer.parseInt(st.nextToken());
-
-            q.offer(new Node(sy,sx,0));
 
             st=new StringTokenizer(br.readLine());
-            ey=Integer.parseInt(st.nextToken());
-            ex=Integer.parseInt(st.nextToken());
+            int sy=Integer.parseInt(st.nextToken());
+            int sx=Integer.parseInt(st.nextToken());
+            q.offer(new chass(sy, sx,0));
 
-            BFS();
-        }
+            st=new StringTokenizer(br.readLine());
+            int ey=Integer.parseInt(st.nextToken());
+            int ex=Integer.parseInt(st.nextToken());
 
-
-
-    }
-
-    private static void BFS() {
-        while (!q.isEmpty()){
-            Node node=q.poll();
-
-            if(node.y==ey && node.x==ex){
-                System.out.println(node.cnt);
-                break;
+            if(sy==ey && sx==ex){
+                System.out.println(0);
+                continue;
             }
 
-            for (int d = 0; d < 8; d++) {
-                int ny=node.y+dy[d];
-                int nx=node.x+dx[d];
+            map[sy][sx]=true;
+            BFS(ey,ex);
+        }
+    }
 
-                if(0<=ny && 0<=nx && ny<N && nx<N && !map[ny][nx]){
-                    map[ny][nx]=true;
-                    q.offer(new Node(ny,nx, node.cnt+1));
+    public static void BFS(int ey,int ex){
+        while (!q.isEmpty()){
+            chass c=q.poll();
+
+            for (int d = 0; d < 8; d++) {
+                int ny=c.y+dy[d];
+                int nx=c.x+dx[d];
+
+                if(0<=ny && ny<N && 0<=nx && nx<N && !map[ny][nx]){
+                    if(ey==ny && ex==nx){
+                        System.out.println(c.cnt+1);
+                        return;
+                    }
+
+                    map[ny][nx]=true; // 방문 했던 기준을 통해 시간복잡도를 줄임, 어차피 BFS는 최단거리임으로 뒤에 오는 순서는 해당 경로를 거치고 최단경로가 될수없음(목적지에 도착하는 경료여도 제일빨리간놈만)
+                    q.offer(new chass(ny,nx,c.cnt+1));
                 }
             }
         }
-
     }
 }
-

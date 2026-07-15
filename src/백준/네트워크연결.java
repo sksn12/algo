@@ -1,51 +1,71 @@
 package 백준;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class 네트워크연결 {
-    static int N,M,answer=Integer.MAX_VALUE;
-    static int[][] map;
+    static int N,E;
+    static class Node implements Comparable<Node>{
+        int next;
+        int cost;
+        Node(int next,int cost){
+            this.next=next;
+            this.cost=cost;
+        }
+        @Override
+        public int compareTo(Node n){
+            return this.cost-n.cost;
+        }
+    }
 
+    static Queue<Node> pq=new PriorityQueue<>();
+    static boolean[] v;
+    static List<Node>[] map;
+    static int answer=0;
     public static void main(String[] args) throws IOException {
-        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-        N=Integer.parseInt(br.readLine());
-        M=Integer.parseInt(br.readLine());
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        N=Integer.parseInt(st.nextToken());
 
-        map=new int[N+1][N+1]; // 인접 행렬 생성
+        st=new StringTokenizer(br.readLine());
+        E=Integer.parseInt(st.nextToken());
 
-        for (int i = 0; i < M; i++) {
-            StringTokenizer st=new StringTokenizer(br.readLine());
+        v=new boolean[N+1];
+        map=new ArrayList[N+1];
 
-            int a=Integer.parseInt(st.nextToken());
-            int b=Integer.parseInt(st.nextToken());
-            int c=Integer.parseInt(st.nextToken());
-
-            map[a][b]=c;
-            map[b][a]=c;
+        for(int i=0;i<map.length;i++){
+            map[i]=new ArrayList<>();
         }
 
-        // dfs를 돌릴때 현재 라인 i,총합 cnt, 방문배열? 들고 다니면 됨
-       boolean[] v=new boolean[N+1];
-        dfs(1,0,v);
+        for(int i=0;i<E;i++){
+            st=new StringTokenizer(br.readLine());
+
+            int n1=Integer.parseInt(st.nextToken());
+            int n2=Integer.parseInt(st.nextToken());
+            int cost=Integer.parseInt(st.nextToken());
+
+            map[n1].add(new Node(n2,cost));
+            map[n2].add(new Node(n1,cost));
+        }
+
+        pq.offer(new Node(1,0));
+        Prim();
 
         System.out.println(answer);
     }
 
-    private static void dfs(int idx, int total, boolean[] v) {
-        if(idx==N){
-            answer=Math.min(answer,total);
-            return;
-        }
+    public static void Prim(){
+        while(!pq.isEmpty()){
+            Node n=pq.poll();
 
-        for (int i = idx; i <= N ; i++) {
-            if(map[idx][i]!=0 && !v[i]){
-                v[i]=true;
-                System.out.println(idx+" "+i+" "+map[idx][i]);
+            if(!v[n.next]){
+                v[n.next]=true;
+                answer+=n.cost;
 
-                dfs(idx+1,total+map[idx][i],v);
+                for(int i=0;i<map[n.next].size();i++){
+                    Node nextNode=map[n.next].get(i);
+                    pq.offer(new Node(nextNode.next,nextNode.cost));
+                }
             }
         }
     }

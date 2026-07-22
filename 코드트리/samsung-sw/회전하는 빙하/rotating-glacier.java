@@ -55,43 +55,57 @@ public class Main {
 
     }
 
-    public static void rotate(int level) {
-        if (level == 0) {
-            return;
-        }
+    public static void rotate(int level){
+        int max=(int) Math.pow(2,level);
+        int[][] tmp=new int[N][N];
 
-        int size = (int) Math.pow(2,level);
-        int half = size / 2;
+        for(int y=0;y<N;y+=max){
+            for(int x=0;x<N;x+=max){
+                int half=(int) Math.pow(2,level-1);
 
-        int[][] tmp = new int[N][N];
+                int cnt=0;
+                for(int ry=y;ry<y+max;ry+=half){
+                    for(int rx=x;rx<x+max;rx+=half){
+                        cnt+=1;
 
-        for (int startY = 0; startY < N; startY += size) {
-            for (int startX = 0; startX < N; startX += size) {
-
-                for (int y = 0; y < half; y++) {
-                    for (int x = 0; x < half; x++) {
-
-                        // 왼쪽 아래(3) → 왼쪽 위(1)
-                        tmp[startY + y][startX + x]
-                                = map[startY + half + y][startX + x];
-
-                        // 왼쪽 위(1) → 오른쪽 위(2)
-                        tmp[startY + y][startX + half + x]
-                                = map[startY + y][startX + x];
-
-                        // 오른쪽 아래(4) → 왼쪽 아래(3)
-                        tmp[startY + half + y][startX + x]
-                                = map[startY + half + y][startX + half + x];
-
-                        // 오른쪽 위(2) → 오른쪽 아래(4)
-                        tmp[startY + half + y][startX + half + x]
-                                = map[startY + y][startX + half + x];
+                        // 1사분면 -> 2사분면으로
+                        if(cnt==1){
+                            for(int sy=ry;sy<ry+half;sy++){
+                                for(int sx=rx;sx<rx+half;sx++){
+                                    tmp[sy][sx+half]=map[sy][sx];
+                                }
+                            }
+                        }
+                        // 2사분면 -> 3사분면으로
+                        else if(cnt==2){
+                            for(int sy=ry;sy<ry+half;sy++){
+                                for(int sx=rx;sx<rx+half;sx++){
+                                    tmp[sy+half][sx]=map[sy][sx];
+                                }
+                            }
+                        }
+                        // 4사분면 -> 1사분면으로
+                        else if(cnt==3){
+                            for(int sy=ry;sy<ry+half;sy++){
+                                for(int sx=rx;sx<rx+half;sx++){
+                                    tmp[sy-half][sx]=map[sy][sx];
+                                }
+                            }
+                        }
+                        // 3사분면 -> 4사분면으로
+                        else{
+                            for(int sy=ry;sy<ry+half;sy++){
+                                for(int sx=rx;sx<rx+half;sx++){
+                                    tmp[sy][sx-half]=map[sy][sx];
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
 
-        map = tmp;
+        map=tmp;
     }
     public static void melt() {
         boolean[][] melt = new boolean[N][N];

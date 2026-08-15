@@ -1,58 +1,74 @@
 package 백준;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class 촌수계산 {
-    static int end,m,N;
-    static int[][] map;
-    static boolean[][] v;
-    static boolean val=false;
+    static int N,M,F1,F2;
+    static List<Integer>[] map;
+    static class Node{
+        int cnt;
+        int pre;
 
+        Node(int cnt,int pre){
+            this.cnt=cnt;
+            this.pre=pre;
+        }
+    }
+
+    static Queue<Node> pq=new LinkedList<>();
+    static boolean[] v;
     public static void main(String[] args) throws IOException {
-        BufferedReader br =new BufferedReader(new InputStreamReader(System.in));
-         N=Integer.parseInt(br.readLine());
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        N = Integer.parseInt(br.readLine());
 
         StringTokenizer st=new StringTokenizer(br.readLine());
 
-        int ey=Integer.parseInt(st.nextToken());
-        end=Integer.parseInt(st.nextToken());
+        F1=Integer.parseInt(st.nextToken());
+        F2=Integer.parseInt(st.nextToken());
 
-        m=Integer.parseInt(br.readLine());
+        M=Integer.parseInt(br.readLine());
 
-        map=new int[N+1][N+1];
-        v=new boolean[N+1][N+1];
+        map=new ArrayList[N+1];
+        for(int i=0;i<=N;i++){
+            map[i]=new ArrayList<>();
+        }
 
-        for (int i = 0; i < m; i++) {
+        v=new boolean[N+1];
+
+        for(int i=0;i<M;i++){
             st=new StringTokenizer(br.readLine());
 
-            int y=Integer.parseInt(st.nextToken());
-            int x=Integer.parseInt(st.nextToken());
+            int P=Integer.parseInt(st.nextToken());
+            int C=Integer.parseInt(st.nextToken());
 
-            map[y][x]=1;
-            map[x][y]=1;
+            map[P].add(C);
+            map[C].add(P);
         }
 
-        dfs(ey,0);
+        v[F1]=true;
+        pq.offer(new Node(0,F1));
 
-        if(!val) System.out.println(-1);
+        System.out.println(BFS());
     }
 
-    private static void dfs(int start,int cnt) {
-        if(start==end){
-            System.out.println(cnt);
-            val=true;
-            return;
-        }
+    public static int BFS(){
+        while(!pq.isEmpty()){
+            Node n=pq.poll();
 
-        for (int i = 1; i <= N; i++) {
-            if(map[start][i]==1 && !v[start][i]){
-                v[start][i]=true;
-                v[i][start]=true;
-                dfs(i,cnt+1);
+            for(int i=0;i<map[n.pre].size();i++){
+                int next=map[n.pre].get(i);
+
+                if(!v[next]){
+                    if(next==F2)return n.cnt+1;
+
+                    v[next]=true;
+                    pq.offer(new Node(n.cnt+1,next));
+                }
+
             }
         }
+
+        return -1;
     }
 }

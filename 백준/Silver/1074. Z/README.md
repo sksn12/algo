@@ -28,7 +28,7 @@
 
 <p style="text-align:center"><img alt="" src="https://upload.acmicpc.net/d3e84bb7-9424-4764-ad3a-811e7fcbd53f/-/preview/" style="width: 533px; height: 535px;"></p>
 
-### 입력 
+### 백준입력 
 
  <p>첫째 줄에 정수 N, r, c가 주어진다.</p>
 

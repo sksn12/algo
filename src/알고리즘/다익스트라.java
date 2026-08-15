@@ -15,19 +15,19 @@ sample input
 3 4 6
  */
 
-// 도착 지점과, 도착지점으로 가는 비용을 의미하는 클래스를 정의한다.
-class Node {
-    int idx;
-    int cost;
 
-    // 생성자
-    Node(int idx, int cost) {
-        this.idx = idx;
-        this.cost = cost;
-    }
-}
 
 public class 다익스트라 {
+    static class Node { // 도착 지점과, 도착지점으로 가는 비용을 의미하는 클래스를 정의한다.
+        int idx;
+        int cost;
+
+        // 생성자
+        Node(int idx, int cost) {
+            this.idx = idx;
+            this.cost = cost;
+        }
+    }
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         // 노드와 간선의 개수

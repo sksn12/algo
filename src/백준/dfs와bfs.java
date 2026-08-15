@@ -31,6 +31,7 @@ public class dfs와bfs {
         BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st=new StringTokenizer(br.readLine()," ");
 
+        // 4 5 1
         int N=Integer.parseInt(st.nextToken());
         int M=Integer.parseInt(st.nextToken());
         int V=Integer.parseInt(st.nextToken());
@@ -39,22 +40,22 @@ public class dfs와bfs {
         graph=new LinkedList[N+1];
         map=new boolean[N+1][N+1];
 
-        // 각 정점마다 List생성(각 정점마다의 간선의 갯수를 모르기 때문!)
+//         각 정점마다 List생성(각 정점마다의 간선의 갯수를 모르기 때문!)
         for (int i = 1; i <= N; i++) {
             graph[i]=new LinkedList<>();
         }
 
-
-
         for (int i = 1; i <= M; i++) {
             st=new StringTokenizer(br.readLine()," ");
 
+            // 1 2
             int v1=Integer.parseInt(st.nextToken());
             int v2=Integer.parseInt(st.nextToken());
 
             graph[v1].add(new Vertex(v2));
             map[v1][v2]=true; // 양방향이기 때문에 대각선을 기준으로 값이 같다.
             map[v2][v1]=true;
+
         }
 
         boolean[] visited=new boolean[N+1];

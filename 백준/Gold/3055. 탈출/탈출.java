@@ -1,105 +1,95 @@
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
+
     static int Y,X;
-    static boolean val=false;
-    static char[][] map;
-    static boolean[][] v;
-    static int[][] second;
-    static Queue<node> qw=new LinkedList<>();
-    static Queue<node> qs=new LinkedList<>();
-    static int[] dy={-1,0,1,0};
-    static int[] dx={0,1,0,-1};
+    static int answer=Integer.MAX_VALUE;
+    static String[][] map;
+    static int[] dy={-1,1,0,0};
+    static int[] dx={0,0,-1,1};
+    static class Node {
+        int y,x,cnt;
+        String name;
 
-    static class node{
-        int y;
-        int x;
-        int cnt;
-
-        node(int y,int x, int cnt){
+        Node(int y,int x,int cnt,String name){
             this.y=y;
             this.x=x;
             this.cnt=cnt;
+            this.name=name;
         }
     }
-
+    static Queue<Node> q=new LinkedList<>();
     public static void main(String[] args) throws IOException {
-        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st=new StringTokenizer(br.readLine());
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
         Y=Integer.parseInt(st.nextToken());
         X=Integer.parseInt(st.nextToken());
 
-        map=new char[Y][X];
-        v=new boolean[Y][X];
-        second=new int[Y][X];
+        map=new String[Y][X];
 
-
-
-        for (int i = 0; i < Y; i++) {
-            String str=br.readLine();
-            for (int j = 0; j < X; j++) {
-                map[i][j]=str.charAt(j);
-                second[i][j]=-1; // 물이 퍼지는 시간 배열을 -1로 초기화
-                if(map[i][j]=='S')qs.offer(new node(i,j,0));
-                else if(map[i][j]=='*')qw.offer(new node(i,j,0));
+        for(int i=0;i<Y;i++){
+            String[] str=br.readLine().split("");
+            for(int j=0;j<X;j++){
+                map[i][j]=str[j];
             }
         }
 
-        // 물이 퍼지는게 가능한 지역을 먼저 BFS로 탐색하고 그 지역에 cnt를 넣어둠
-        // 그래서 고슴도치가 이동하는 BFS를 돌릴때 고슴도치의 cnt가 물의 cnt보다 작아야만 전진가능 (같아도 안됨)
-
-        // 물 먼저 BFS
-        BFS_water();
-
-        // 고슴도치 이동 BFS
-        BFS_s();
-
-        // 동굴 도착 x
-        if(!val) System.out.println("KAKTUS");
-    }
-
-    private static void BFS_water() {
-        while (!qw.isEmpty()){
-            node n=qw.poll();
-            second[n.y][n.x]=n.cnt;
-
-            for (int d = 0; d < 4; d++) {
-                int ny=n.y+dy[d];
-                int nx=n.x+dx[d];
-
-                if(0<=ny && 0<=nx && ny<Y && nx<X && second[ny][nx]==-1 && (map[ny][nx]=='.'|| map[ny][nx]=='S')){
-                    second[ny][nx]=n.cnt+1;
-                    qw.offer(new node(ny,nx,n.cnt+1));
+        // 1. 모든 물의 위치 먼저 큐에 넣기 -> 고슴도치보다 물을 먼저 이동시키기 위해
+        for(int i=0;i<Y;i++){
+            for(int j=0;j<X;j++){
+                if(map[i][j].equals("*")){
+                    q.offer(new Node(i,j,0,"*"));
                 }
             }
         }
+
+        // 2.고슴도치 시작점 넣기
+        for(int i=0;i<Y;i++){
+            for(int j=0;j<X;j++){
+                if(map[i][j].equals("S")){
+                    q.offer(new Node(i,j,0,"S"));
+                }
+            }
+        }
+
+        // 3. 고슴도치가 도착점이 도달하는 최단 경로 찾기
+        BFS();
+
+        if(answer==Integer.MAX_VALUE){
+            System.out.println("KAKTUS");
+        }else{
+            System.out.println(answer);
+        }
     }
 
-    private static void BFS_s() {
-        while (!qs.isEmpty()){
-            node n=qs.poll();
-            if(map[n.y][n.x]=='D'){
-                System.out.println(n.cnt);
-                val=true;
-                break;
-            }
+    public static void BFS(){
+        while(!q.isEmpty()){
+            Node n=q.poll();
 
-            v[n.y][n.x]=true;
+            for(int d=0;d<4;d++){
+                int ny=dy[d]+n.y;
+                int nx=dx[d]+n.x;
 
-            for (int d = 0; d < 4; d++) {
-                int ny=n.y+dy[d];
-                int nx=n.x+dx[d];
-
-                if(0<=ny && 0<=nx && ny<Y && nx<X && !v[ny][nx] && (map[ny][nx]=='.'||map[ny][nx]=='D') && (n.cnt+1<second[ny][nx]||second[ny][nx]==-1)){
-                    v[ny][nx]=true;
-                    qs.offer(new node(ny,nx,n.cnt+1));
+                if(0<=ny && 0<=nx && ny<Y && nx<X && !map[ny][nx].equals("X")){
+                    if(n.name.equals("*")){
+                        // 3-1. 현재 큐에서 나온값이 물인경우 고슴도치의 위치와 빈 위치만 이동가능, 물인경우는 이동 x(방문처리)
+                        if(map[ny][nx].equals("S") || map[ny][nx].equals(".")){
+                            map[ny][nx]="*";
+                            q.offer(new Node(ny,nx,n.cnt+1,"*"));
+                        }
+                    }else if(n.name.equals("S")){
+                        // 3-2. 현재 큐에서 나온값이 고슴도치인 경우 도착지에 가거나 빈값만 갈수있음
+                        if(map[ny][nx].equals("D")){
+                            answer=n.cnt+1;
+                            return;
+                        }else if(map[ny][nx].equals(".")){
+                            map[ny][nx]="S";
+                            q.offer(new Node(ny,nx,n.cnt+1,"S"));
+                        }
+                    }
                 }
             }
         }

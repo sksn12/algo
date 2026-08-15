@@ -1,96 +1,88 @@
 package 백준;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class 봄버맨 {
-    static int Y,X,N;
-    static int[] dy={-1,0,1,0};
-    static int[] dx={0,1,0,-1};
-    static char[][] map;
-    static Queue<node> q=new LinkedList<>();
-    static class node{
-        int y;
-        int x;
-
-        node(int y,int x){
-            this.y=y;
-            this.x=x;
-        }
-    }
-
+    static int Y,X,CNT;
+    static String[][] map;
+    static int[] dy={-1,1,0,0};
+    static int[] dx={0,0,-1,1};
+    static Queue<int[]> q=new LinkedList<>();
     public static void main(String[] args) throws IOException {
-        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st=new StringTokenizer(br.readLine());
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
-        Y=Integer.parseInt(st.nextToken());
-        X=Integer.parseInt(st.nextToken());
-        N=Integer.parseInt(st.nextToken());
+        Y = Integer.parseInt(st.nextToken());
+        X = Integer.parseInt(st.nextToken());
+        CNT = Integer.parseInt(st.nextToken());
 
-        map=new char[Y][X];
+        map = new String[Y][X];
 
         for (int i = 0; i < Y; i++) {
-            String str=br.readLine();
+            String[] str = br.readLine().split("");
             for (int j = 0; j < X; j++) {
-                map[i][j]=str.charAt(j);
+                map[i][j] = str[j];
+
+                if (map[i][j].equals("O")) q.offer(new int[]{i, j});
             }
         }
 
-        if(N==1)print();
-        else {
-            // 초기 1초 버리기
-            for (int i = 1; i < N; i++) {
-                // 폭탄 폭발
-                if (i % 2 == 0) {
-                    boolean[][] v = new boolean[Y][X];
-                    Boom(v);
-                } else { // 폭탄 설치
-                    Plant();
-                }
-            }
-
-            // 출력
-            print();
+        if(CNT==1){
+            Print();
+            return;
         }
+
+        int cnt = 1;
+        while (true){
+            Hide();
+            cnt+=1;
+            if(cnt==CNT)break;
+            Boom();
+            cnt+=1;
+            if(cnt==CNT)break;
+        }
+
+        Print();
     }
 
-    private static void Plant() {
-        for (int i = 0; i < Y; i++) {
-            for (int j = 0; j < X; j++) {
-                if(map[i][j]=='O')q.offer(new node(i,j));
-                map[i][j]='O';
-            }
-        }
-    }
+    public static void Boom(){
+        while(!q.isEmpty()){
+            int[] yx=q.poll();
+            map[yx[0]][yx[1]]=".";
 
-    private static void Boom(boolean[][] v) {
-        while (!q.isEmpty()){
-            node n=q.poll();
-            v[n.y][n.x]=true;
-            map[n.y][n.x]='.';
+            for(int d=0;d<4;d++){
+                int ny=yx[0]+dy[d];
+                int nx=yx[1]+dx[d];
 
-            for (int d = 0; d < 4; d++) {
-                int ny=n.y+dy[d];
-                int nx=n.x+dx[d];
-
-                if(0<=ny && 0<=nx && ny<Y && nx<X && !v[ny][nx]){
-                    v[ny][nx]=true;
-                    map[ny][nx]='.';
+                if(0<=ny && 0<=nx && ny<Y && nx<X){
+                    map[ny][nx]=".";
                 }
             }
         }
-    }
 
-    private static void print() {
         for (int i = 0; i < Y; i++) {
             for (int j = 0; j < X; j++) {
-                System.out.print(map[i][j]);
+                if (map[i][j].equals("O")) q.offer(new int[]{i, j});
             }
-            System.out.println();
+        }
+    }
+
+    public static void Hide(){
+        for (int i = 0; i < Y; i++) {
+            for (int j = 0; j < X; j++) {
+                map[i][j]="O";
+            }
+        }
+    }
+
+    public static void Print(){
+        for (int i = 0; i < Y; i++) {
+            StringBuilder sb=new StringBuilder();
+            for (int j = 0; j < X; j++) {
+                sb.append(map[i][j]);
+            }
+            System.out.println(sb);
         }
     }
 }

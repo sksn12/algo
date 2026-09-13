@@ -81,6 +81,7 @@ public class 적록색약 {
             node n=q.poll();
             v[n.y][n.x]=true;
 
+            // 위 오 아 왼
             for (int d = 0; d < 4; d++) {
                 int ny=n.y+dy[d];
                 int nx=n.x+dx[d];

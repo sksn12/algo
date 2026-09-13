@@ -1,79 +1,74 @@
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
+import java.io.*;
 
 public class Main {
-    static int L,C;
-    static boolean[] sel;
-    static List<String> map;
-    static String[] mo={"a","e","i","o","u"};
+    static int N,M;
+    static String[] sel;
+    static String[] arr;
 
-    public static void main(String[] args) throws IOException {
+
+    public static void main(String[] args) throws IOException{
         BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st=new StringTokenizer(br.readLine());
 
-        L=Integer.parseInt(st.nextToken());
-        C=Integer.parseInt(st.nextToken());
+        N=Integer.parseInt(st.nextToken());
+        M=Integer.parseInt(st.nextToken());
 
-        map=new ArrayList<>();
-        sel=new boolean[C];
+        arr=new String[M];
+        sel=new String[N];
 
-        String[] str=br.readLine().split(" ");
-        for (int i = 0; i < C; i++) {
-            map.add(str[i]);
+        st=new StringTokenizer(br.readLine());
+        for(int n=0;n<M;n++){
+            arr[n]=st.nextToken();
         }
-
-        Collections.sort(map);
-
+        Arrays.sort(arr);
         recursive(0,0);
     }
 
-    private static void recursive(int idx, int k) {
-        if(idx==C){
-            if(k==L){
-                List<String> sb=new ArrayList<>();
-                int cnt1=0; // 모음갯수
-                int cnt2=0; // 자음 갯수
+    public static void recursive(int level,int start){
+        if(level==N){
+            String[] tmp=new String[sel.length];
 
-                for (int i = 0; i < C; i++) {
-                    if(sel[i]){
-                        // 자음 인지 모음인지 검사
-                        boolean val=false;
-                        for (int j = 0; j <mo.length ; j++) {
-                            if(map.get(i).equals(mo[j])){
-                                cnt1+=1;
-                                val=true;
-                                break;
-                            }
-                        }
+            for(int i=0;i<sel.length;i++){
+                tmp[i]=sel[i];
+            }
 
-                        // 자음 이라면
-                        if(!val)cnt2+=1;
+            Arrays.sort(tmp);
 
-                        // 일단 문자열에 담에 두기
-                        sb.add(map.get(i));
+            for(int i=0;i<sel.length;i++){
+                if(!tmp[i].equals(sel[i]))return;
+            }
+
+            String[] mo={"a", "e", "i", "o", "u"};
+
+            int cntMo=0;
+            int cntJa=0;
+
+            for(int i=0;i<sel.length;i++){
+                boolean val=false;
+
+                for(int j=0;j<mo.length;j++){
+                    if(mo[j].equals(sel[i])){
+                        cntMo+=1;
+                        val=true;
                     }
                 }
 
+                if(!val)cntJa+=1;
+            }
 
-                // 모음 자음 갯수 체크 후 문자열 순서확인
-                if(cnt1>=1 && cnt2>=2){
-
-                    for (int i = 0; i < sb.size(); i++) {
-                        System.out.print(sb.get(i));
-                    }
-                    System.out.println();
+            if(cntMo>0 && cntJa>1){
+                for (String s : sel) {
+                    System.out.print(s);
                 }
+                System.out.println();
             }
             return;
         }
 
-
-        sel[idx]=true;
-        recursive(idx+1,k+1);
-        sel[idx]=false;
-        recursive(idx+1,k);
+        for(int i=start;i<M;i++){
+            sel[level]=arr[i];
+            recursive(level+1,i+1);
+        }
     }
 }
